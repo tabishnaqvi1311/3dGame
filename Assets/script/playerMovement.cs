@@ -15,6 +15,8 @@ public class playerMovement : MonoBehaviour
     //transform var type to get the postition of the player
     [SerializeField] Transform groundCheck;
     [SerializeField] LayerMask ground;
+
+    [SerializeField] AudioSource jumpSFX;
     // Start is called before the first frame update
     void Start()
     {   //set the value once when the game starts
@@ -35,7 +37,7 @@ public class playerMovement : MonoBehaviour
         //jump
         if (Input.GetButtonDown("Jump") && IsGrounded())
         {
-            rb.velocity = new Vector3(rb.velocity.x, jumpForce, rb.velocity.z);
+            Jump();
         }
     }
 
@@ -47,5 +49,21 @@ public class playerMovement : MonoBehaviour
         //that creates a sphere and checks if the
         //sphere overlaps with the ground
         return Physics.CheckSphere(groundCheck.position, .1f, ground);
+    }
+
+    void Jump()
+    {
+        rb.velocity = new Vector3(rb.velocity.x, jumpForce, rb.velocity.z);
+        jumpSFX.Play();
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("EnemyHead"))
+        {
+            //destroy the enemy
+            Destroy(collision.transform.parent.gameObject);
+            Jump();
+        }
     }
 }
